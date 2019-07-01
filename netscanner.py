@@ -1,27 +1,17 @@
-import scapy.all as scapy
+import argparse
+from modules import arp
 
-def ArpRequest(ip):
-    arp_request = scapy.ARP(pdst=ip)
-    broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    arp_request_broadcast = broadcast/arp_request
-    answered = scapy.srp(arp_request_broadcast, timeout=1, verbose=False)[0]
-    
-    target_list = []
-
-   
-    for item in answered:
-        target_item = {
-            "ip": item[1].psrc,
-            "mac":item[1].hwsrc
-        }
-        target_list.append(target_item)
-    return target_list
-
-def ShowArpScan(target_list):
-     print("IP\t\t\tMAC Address\n--------------------------------")
-     for target in target_list:
-         print(target["ip"] + "\t\t"  + target["mac"])
+def get_arguments():
+    parser = argparse.ArgumentParser(description= "Net Scanner usage ")
+    parser.add_argument("-t", "--target", nargs=2, dest="target",  help="Target IP (192.168.1.1) / IP range (192.168.1.0/24) ")
+    parser.add_argument("-a", "--arp",   help="Scan network using arp")
+    options = parser.parse_args()
+    return options
 
 
-arp_scan = ArpRequest("192.168.1.0/24")
-ShowArpScan(arp_scan)
+
+options = get_arguments()
+print(options)
+
+arp_scan = arp.ArpScan(options.target)
+arp.ShowArpScan(arp_scan)
