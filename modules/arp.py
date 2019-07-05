@@ -2,6 +2,9 @@ if  __name__ == "__main__":
     pass
 
 import scapy.all as scapy
+import pprint
+import requests
+
 
 def ArpScan(ip):
     arp_request = scapy.ARP(pdst=ip)
@@ -20,6 +23,12 @@ def ArpScan(ip):
     return target_list
 
 def ShowArpScan(target_list):
-     print("IP\t\t\tMAC Address\n--------------------------------")
+     MAC_URL = 'http://macvendors.co/api/%s' 
+     print("IP\t\t\tMAC Address\t\t\tVendor\n-----------------------------------------------------------------------------------------")
      for target in target_list:
-         print(target["ip"] + "\t\t"  + target["mac"])
+         vendor_list = requests.get(MAC_URL % target["mac"])
+         vendor = vendor_list.json()["result"]["company"]
+         print(target["ip"] + "\t\t"  + target["mac"] + "\t\t" + vendor)
+
+   
+     
